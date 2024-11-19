@@ -1,0 +1,53 @@
+# Query 1: Get the Location of All Accidents
+PREFIX ns: <http://accidentes.madrid.es/>
+PREFIX geo: <https://www.w3.org/2003/01/geo/wgs84_pos#>
+
+SELECT ?accident ?distrito ?latitude ?longitude
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:tieneLocalizacion ?location .
+  ?location geo:lat ?latitude ;
+            geo:long ?longitude ;
+            ns:tieneDistrito ?distritoEntity .
+  ?distritoEntity ns:distrito ?distrito .
+}
+
+#Query 2: Retrieve the Vechicle type and Date
+PREFIX ns: <http://accidentes.madrid.es/>
+
+SELECT ?accident ?vehicleType ?date
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:fechaHora ?date .
+  ?participente ns:tipoVehiculo ?vehicleType .
+}
+
+
+# Query 3: Filter Accidents with Injuries
+PREFIX ns: <http://accidentes.madrid.es/>
+
+SELECT ?accident ?participant ?injurySeverity ?injurySeverityCode
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:tieneParticipante ?participant .
+  ?participant ns:tieneLesividad ?lesividad.
+  ?lesividad ns:lesividad ?injurySeverity ;
+             ns:codLesividad ?injurySeverityCode .
+  FILTER (?injurySeverity != "Sin asistencia sanitaria")
+}
+
+
+# Query 4: Retrieve Accidents in Summer Months 
+PREFIX ns: <http://accidentes.madrid.es/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?accident ?date ?location
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:fechaHora ?date ;
+            ns:tieneLocalizacion ?location .
+  FILTER (MONTH(?date) IN (6, 7, 8))
+}
+ORDER BY DESC(?injurySeverityCode)
+
+

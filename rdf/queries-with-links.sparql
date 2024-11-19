@@ -1,0 +1,52 @@
+# Query 1: Get the number of accidents per month
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ns: <http://accidentes.madrid.es/>
+SELECT (COUNT(?accident) AS ?numAccidents) ?month {
+    {
+        SELECT ?accident (MONTH(?date) AS ?month) WHERE {
+            ?accident rdf:type ns:Accidente .
+            ?accident ns:fechaHora ?date
+        }
+    }
+}
+GROUP BY ?month
+
+
+#Query 2: Returns the district of all accidents 
+PREFIX ns: <http://accidentes.madrid.es/>
+
+SELECT ?accident ?num_expediente ?districtName ?districtCode
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:tieneLocalizacion ?location .
+  ?location ns:tieneDistrito ?district .
+  ?district ns:distrito ?districtName ;
+           ns:codDistrito ?districtCode .
+}
+
+#Query 3: Lists the number of accidents per districts 
+PREFIX ns: <http://accidentes.madrid.es/>
+
+SELECT ?districtName (COUNT(?accident) AS ?accidentCount)
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:tieneLocalizacion ?location .
+  ?location ns:tieneDistrito ?district .
+  ?district ns:distrito ?districtName .
+}
+GROUP BY ?districtName
+ORDER BY DESC(?accidentCount)
+
+#Query 4: Lists the top 3 most dangerous distrits 
+PREFIX ns: <http://accidentes.madrid.es/>
+
+SELECT ?districtName (COUNT(?accident) AS ?accidentCount)
+WHERE {
+  ?accident ns:numExpediente ?num_expediente ;
+            ns:tieneLocalizacion ?location .
+  ?location ns:tieneDistrito ?district .
+  ?district ns:distrito ?districtName .
+}
+GROUP BY ?districtName
+ORDER BY DESC(?accidentCount)
+LIMIT 3
