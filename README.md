@@ -1,4 +1,4 @@
-# Traffic Accident Dataset Analysis in Madrid
+# Traffic Accident Analysis in Madrid - Open Data
 
 ## Aim of the Project
 
